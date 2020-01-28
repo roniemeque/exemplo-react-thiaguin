@@ -1,24 +1,43 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import Pessoa from "./Pessoa";
 
 function App() {
+  const [pessoas, setPessoas] = useState([]);
+  const [chamando, setChamando] = useState("Thiago");
+
+  const buscaPessoa = async () => {
+    setPessoas([]);
+
+    const res = await fetch(
+      `https://uinames.com/api/?amount=10&region=brazil&ext`
+    );
+    const data = await res.json();
+
+    console.log(data);
+
+    setPessoas(data);
+  };
+
+  useEffect(() => {
+    buscaPessoa();
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      {chamando && <p>{chamando}</p>}
+      {!pessoas.length ? "Carregando..." : "Carregado!!"}
+      {!!pessoas.length && (
+        <ul>
+          {pessoas.map(pessoa => (
+            <Pessoa
+              setChamando={setChamando}
+              pessoa={pessoa}
+              key={pessoa.name}
+            ></Pessoa>
+          ))}
+        </ul>
+      )}
+      <button onClick={buscaPessoa}>buscar pessoas</button>
     </div>
   );
 }
